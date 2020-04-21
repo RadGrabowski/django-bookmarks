@@ -24,6 +24,8 @@ class UserRegistrationForm(forms.ModelForm):
 
     def clean_email(self):
         email = self.cleaned_data['email']
+        if email == '':
+            raise forms.ValidationError('Email is required.')
         if User.objects.filter(email=email).exists():
             raise forms.ValidationError('This email is already taken.')
         return email
