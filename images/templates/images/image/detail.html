@@ -62,7 +62,8 @@
                 var previous_likes = parseInt($('span.count .total').text());
                 var like_plural = $('span.count .likes').text()
                 $('span.count .total').text(previous_action == 'like' ? previous_likes + 1 : previous_likes - 1);
-                $('span.count .likes').text(previous_likes == 1 ? like_plural = 'likes' : like_plural = 'like');
+                var new_likes = parseInt($('span.count .total').text());
+                $('span.count .likes').text(new_likes == 1 ? like_plural = 'like' : like_plural = 'likes');
             }
         }
     );

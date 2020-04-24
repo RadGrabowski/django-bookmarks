@@ -3,7 +3,7 @@ from .models import Image
 
 
 class ImageAdmin(admin.ModelAdmin):
-    list_display = ['title', 'slug', 'image', 'created']
+    list_display = ['title', 'user', 'slug', 'image', 'created']
     list_filter = ['created']
 
 
