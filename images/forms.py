@@ -24,7 +24,9 @@ class ImageCreateForm(forms.ModelForm):
     def save(self, force_insert=False, force_update=False, commit=True):
         image = super(ImageCreateForm, self).save(commit=False)
         image_url = self.cleaned_data['url']
-        image_name = f"{slugify(image.title)}, {image_url.rsplit('.', 1)[1].lower()}"
+        name = slugify(image.title)
+        extension = image_url.rsplit('.', 1)[1].lower()
+        image_name = f'{name}.{extension}'
 
         response = request.urlopen(image_url)
         image.image.save(image_name, ContentFile(response.read()), save=False)
