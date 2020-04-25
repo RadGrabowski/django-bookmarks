@@ -38,7 +38,7 @@
                     <a href="{% url "dashboard" %}">My dashboard</a>
                 </li>
                 <li {% if section == "images" %}class="text-muted"{% endif %}>
-                    <a href="#">Images</a>
+                    <a href="{% url "images:list" %}">Images</a>
                 </li>
                 <li {% if section == "people" %}class="text-muted"{% endif %}>
                     <a href="#">People</a>
