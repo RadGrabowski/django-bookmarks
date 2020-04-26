@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django.views.generic.detail import DetailView
 from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse, HttpResponse
@@ -8,6 +9,7 @@ from .forms import ImageCreateForm
 from .models import Image
 from common.decorators import ajax_required
 from actions.utils import create_action
+from hitcount.views import HitCountDetailView
 
 
 @login_required
@@ -28,9 +30,22 @@ def image_create(request):
     return render(request, 'images/image/create.html', {'section': 'images', 'form': form})
 
 
-def image_detail(request, id_, slug):
-    image = get_object_or_404(Image, id=id_, slug=slug)
-    return render(request, 'images/image/detail.html', {'section': 'images', 'image': image})
+class ImageDetailView(HitCountDetailView):
+    model = Image
+    template_name = 'images/image/detail.html'
+    context_object_name = 'image'
+    count_hit = True
+    slug_field = 'slug'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['section'] = 'images'
+        return context
+
+
+# def image_detail(request, id_, slug):
+#     image = get_object_or_404(Image, id=id_, slug=slug)
+#     return render(request, 'images/image/detail.html', {'section': 'images', 'image': image})
 
 
 @ajax_required
@@ -69,3 +84,12 @@ def image_list(request):
     if request.is_ajax():
         return render(request, 'images/image/list_ajax.html', {'section': 'images', 'images': images})
     return render(request, 'images/image/list.html', {'section': 'images', 'images': images})
+
+
+@login_required
+def image_ranking(request):
+    most_viewed = Image.objects.order_by('-hit_count_generic__hits')[:10]
+    for image in most_viewed:
+        print(image.hit_count_generic)
+
+    return render(request, 'images/image/ranking.html', {'section': 'images', 'most_viewed': most_viewed})

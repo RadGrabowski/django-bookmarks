@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load hitcount_tags %}
 
 {% block title %}{{ image.title }}{% endblock %}
 
@@ -17,6 +18,8 @@
                 <span class="total">{{ total_likes }}</span>
                 <span class="likes">like{{ total_likes|pluralize }}</span>
             </span>
+            {% get_hit_count for image as hits %}
+            <p>{{ hits }} view{{ hits|pluralize }}</p>
                 <a href="#" data-id="{{ image.id }}" data-action="{% if request.user in users_like %}un{% endif %}like"
                    class="like-button">
                     {% if request.user not in users_like %}

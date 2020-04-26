@@ -6,6 +6,7 @@ app_name = 'images'
 urlpatterns = [
     path('', views.image_list, name='list'),
     path('create/', views.image_create, name='create'),
-    path('detail/<id_>/<slug>', views.image_detail, name='detail'),
+    path('detail/<pk>/<slug>', views.ImageDetailView.as_view(), name='detail'),
     path('like/', views.image_like, name='like'),
+    path('ranking/', views.image_ranking, name='ranking')
 ]
