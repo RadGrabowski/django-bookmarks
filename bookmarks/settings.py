@@ -148,3 +148,12 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 ABSOLUTE_URL_OVERRIDES = {
     'auth.user': lambda u: reverse_lazy('user_detail', args=[u.username])
 }
+
+# TODO make some layout
+# TODO make layout on the bookmarklet
+# TODO add some icons
+# todo make impossible to follow yourself
+# todo show all people or the only one you follow
+# todo add authors of images to the templates
+# todo show whether you like an image or follow an user in a general list
+# todo add total likes, followers and views on users profile

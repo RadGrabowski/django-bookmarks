@@ -17,11 +17,13 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic.base import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('account/', include('account.urls')),
     path('images/', include('images.urls', namespace='images')),
+    path('', RedirectView.as_view(pattern_name='dashboard', permanent=False)),
 ]
 
 if settings.DEBUG:

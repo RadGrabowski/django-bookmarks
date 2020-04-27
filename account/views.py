@@ -35,7 +35,7 @@ def user_login(request):
 
 @login_required
 def dashboard(request):
-    outdated_actions = Action.objects.filter(verb='is following')
+    outdated_actions = Action.objects.filter(Q(verb='is following') | Q(verb='likes') | Q(verb='bookmarked image'))
     # if the target does not exist anymore (deleted account), delete the action
     for outdated_action in outdated_actions:
         if outdated_action.target is None:
