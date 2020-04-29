@@ -1,11 +1,24 @@
 {% extends "base.html" %}
 {% block title %}Create an account{% endblock %}
 {% block content %}
-    <h1>Create an account</h1>
-    <p>Please, sign up using the following form:</p>
-    <form action="." method="post">
-        {{ user_form.as_p }}
-        {% csrf_token %}
-        <p><input type="submit" value="Create my account"></p>
-    </form>
+    <div style="padding-left: 10%; padding-top: 1%">
+        <h1>Create an account</h1>
+        <p>Please, sign up using the following form:</p>
+        <form action="." method="post">
+            {% for field in user_form %}
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    <br>
+                    {{ field }}
+                    <small style="font-style: italic; color: #ff300f; font-size: 0.8em;">{{ field.errors }}</small>
+                    {% if field.help_text %}
+                        <br>
+                        <small style="font-style: italic; color: #10c1d1; font-size: 0.8em;">{{ field.help_text|safe }}</small>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            {% csrf_token %}
+            <p><input class="btn btn-primary" type="submit" value="Create my account"></p>
+        </form>
+    </div>
 {% endblock %}

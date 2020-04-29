@@ -1,15 +1,27 @@
 {% load thumbnail %}
-{% for image in images %}
-    <div class="image">
-        <a href="{{ image.get_absolute_url }}">
-            {% thumbnail image.image "300x300" crop="100%" as im %}
-                <a href="{{ image.get_absolute_url }}">
-                    <img src="{{ im.url }}" alt="Image not loaded">
-                </a>
-            {% endthumbnail %}
-        </a>
-        <div class="info">
-                <p>{{ image.title }}</p>
-        </div>
-    </div>
-{% endfor %}
+<div class="row md-2">
+    {% for image in images %}
+        {% thumbnail image.image "250x200" crop="100%" as im %}
+            <div class="col-md-4">
+                <div class="card mb-4 shadow-sm">
+                    <a href="{{ image.image.url }}">
+                        <img id="dl" class="card-img-top" src="{{ im.url }}" alt="Image not loaded">
+                    </a>
+                    <div class="card-body">
+                        <h4>{{ image.title }}</h4>
+                        <p class="card-text">{{ image.description|truncatechars:80 }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group">
+                                <a type="button" href="{{ image.get_absolute_url }}"
+                                   class="btn btn-sm btn-outline-secondary">View</a>
+                                <a type="button" class="btn btn-sm btn-outline-secondary" href="{{ image.image.url }}" download>Save</a>
+                            </div>
+                            <small class="text-muted">{{ image.user.get_full_name }}, {{ image.created|timesince }}
+                                ago</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endthumbnail %}
+    {% endfor %}
+</div>

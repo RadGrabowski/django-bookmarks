@@ -2,19 +2,22 @@
 {% load thumbnail %}
 {% block title %}People{% endblock %}
 {% block content %}
+    <div style="padding: 1% 5% 5% 10%;" >
     <h1>People</h1>
-    <div id="people-list">
+    <hr>
+    <div id="people-list" class="row">
         {% for user in users %}
-            <div class="user">
+            <div class="col" style="padding-bottom: 5%">
                 <a href="{{ user.get_absolute_url }}">
-                    <img src="{% thumbnail user.profile.photo "180x180" %}" alt="No image found.">
+                    <img src="{% thumbnail user.profile.photo "180x180" %}" alt="No image found." style="border-radius: 50%">
                 </a>
                 <div class="info">
-                    <a href="{{ user.get_absolute_url }}" class="title">
+                    <a href="{{ user.get_absolute_url }}" class="btn btn-sm btn-outline-secondary" style="margin-top: 5%">
                         {{ user.get_full_name }}
                     </a>
                 </div>
             </div>
         {% endfor %}
+    </div>
     </div>
 {% endblock %}

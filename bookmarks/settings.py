@@ -157,3 +157,6 @@ ABSOLUTE_URL_OVERRIDES = {
 # todo add authors of images to the templates
 # todo show whether you like an image or follow an user in a general list
 # todo add total likes, followers and views on users profile
+# todo list of followers on profile
+# todo layout of messages
+# todo image list without your own images

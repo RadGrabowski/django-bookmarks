@@ -1,23 +1,35 @@
 {% extends "base.html" %}
-{% block title %}Log-in{% endblock %}
+{% block title %}Login{% endblock %}
 {% block content %}
-    <h1>Log-in</h1>
-    {% if form.errors %}
-        <p>
-            Your username and password didn't match.
-            Please try again.
-        </p>
-    {% else %}
-        <p>Please, use the following form to log-in. If you don't have an account <a href="{% url "register" %}">register
-            here</a></p>
-    {% endif %}
-    <div class="login-form">
+    <div style="padding-left: 10%; padding-top: 1%">
+
+        <h1>Log-in</h1>
+        {% if form.errors %}
+            <p>
+                Your username and password didn't match.
+                Please try again.
+            </p>
+        {% else %}
+            <p>Please, use the following form to login.<br>
+                If you don't have an account <a href="{% url "register" %}">register here</a></p>
+        {% endif %}
         <form action="{% url 'login' %}" method="post">
-            {{ form.as_p }}
+            {% for field in form %}
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    <br>
+                    {{ field }}
+                    <small style="font-style: italic; color: #ff300f; font-size: 0.8em;">{{ field.errors }}</small>
+                    {% if field.help_text %}
+                        <small style="font-style: italic; color: #10c1d1; font-size: 0.8em;">{{ field.help_text|safe }}</small>
+                    {% endif %}
+                </div>
+            {% endfor %}
             {% csrf_token %}
             <input type="hidden" name="next" value="{{ next }}"/>
-            <p><input type="submit" value="Log-in"></p>
+            <p><input class="btn btn-primary" type="submit" value="Login"></p>
         </form>
         <p><a href="{% url "password_reset" %}">Forgotten your password?</a></p>
+
     </div>
 {% endblock %}

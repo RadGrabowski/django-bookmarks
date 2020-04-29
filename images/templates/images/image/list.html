@@ -1,10 +1,22 @@
 {% extends "base.html" %}
 {% block title %}Images bookmarked{% endblock %}
 {% block content %}
-    <h1>Images bookmarked</h1>
-    <a href="{% url 'images:ranking' %}">Top viewed images</a>
-    <div id="image-list">
-        {% include "images/image/list_ajax.html" %}
+    <div style="padding-left: 10%; padding-top: 1%; padding-right: 5%">
+        <span class="h1" style="padding-right: 20px">Images bookmarked</span>
+
+        <a class="btn btn-outline-success" href="{% url 'images:ranking' %}" style="margin-bottom: 20px">
+            <svg class="bi bi-bar-chart-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor"
+                 xmlns="http://www.w3.org/2000/svg">
+                <rect width="4" height="5" x="1" y="10" rx="1"/>
+                <rect width="4" height="9" x="6" y="6" rx="1"/>
+                <rect width="4" height="14" x="11" y="1" rx="1"/>
+            </svg>
+            Top viewed images</a>
+        <br>
+        <br>
+        <div id="image-list">
+            {% include "images/image/list_ajax.html" %}
+        </div>
     </div>
 {% endblock %}
 
@@ -14,18 +26,18 @@
     var block_request = false;
 
     $(window).scroll(function () {
-        var margin = $(document).height() - $(window).height() - 200;
-        if ($(window).scrollTop() > margin && empty_page === false && block_request === false) {
-            block_request = true;
-            page += 1;
-            $.get('?page=' + page, function (data) {
-                if (data === '') {
-                    empty_page = true;
-                } else {
-                    block_request = false;
-                    $('#image-list').append(data);
-                }
-            });
-        }
+    var margin = $(document).height() - $(window).height() - 200;
+    if ($(window).scrollTop() > margin && empty_page === false && block_request === false) {
+    block_request = true;
+    page += 1;
+    $.get('?page=' + page, function (data) {
+    if (data === '') {
+    empty_page = true;
+    } else {
+    block_request = false;
+    $('#image-list').append(data);
+    }
+    });
+    }
     });
 {% endblock %}

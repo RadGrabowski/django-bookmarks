@@ -2,51 +2,73 @@
 {% load thumbnail %}
 {% block title %}{{ user.get_full_name }}{% endblock %}
 {% block content %}
-    <h1>{{ user.get_full_name }}</h1>
-    <div class="profile-info">
-        <img src="{% thumbnail user.profile.photo "180x180" %}" class="userdetail">
-    </div>
-    {% with total_followers=user.followers.count %}
-        <span class="count">
-            <span class="total">{{ total_followers }}</span>
-            <span class="followers">follower{{ total_followers|pluralize }}</span>
-        </span>
-        <a href="#" data-id="{{ user.id }}" data-action="{% if request.user in user.followers.all %}un{% endif %}follow"
-           class="followbutton">
-            {% if request.user not in user.followers.all %}
-                Follow
-            {% else %}
-                Unfollow
-            {% endif %}
-        </a>
-        <h3>Images bookmarked by {{ user.first_name }}:</h3>
-        <div id="image-list" class="image-container">
-            {% include "images/image/list_ajax.html" with images=user.images_created.all %}
+    <div style="padding-left: 10%; padding-top: 1%; padding-right: 5%">
+        <h1>{{ user.get_full_name }}</h1>
+        <div class="row">
+            <div class="col-2">
+                <img src="{% thumbnail user.profile.photo "180x180" %}" class="userdetail">
+            </div>
+            <div class="col-10" style="margin: 1% 0 0 0">
+                {% with total_followers=user.followers.count %}
+                    <span class="count">
+                <span class="total">{{ total_followers }}</span>
+                <span class="followers">follower{{ total_followers|pluralize }}</span>
+                </span>
+                    <br>
+                    <br>
+                    <a href="#" data-id="{{ user.id }}"
+                       data-action="{% if request.user in user.followers.all %}un{% endif %}follow"
+                            {% if request.user not in user.followers.all %}
+                       class="followbutton btn btn-outline-primary" style="width: 100px">
+                                Follow
+                            {% else %}
+                                class="followbutton btn btn-primary" style="width: 100px">
+                                Unfollow
+                            {% endif %}
+                    </a>
+                    </div>
+
+                    <br> <br> <br> <br> <br> <br> <br> <br><br>
+                    <hr>
+                    <h2>Images bookmarked by {{ user.first_name }}:</h2>
+                    <br>
+                    <br>
+                    <br>
+                    <div id="image-list" class="image-container">
+                        {% include "images/image/list_ajax.html" with images=user.images_created.all %}
+                    </div>
+                {% endwith %}
         </div>
-    {% endwith %}
+    </div>
 {% endblock %}
 
 {% block domready %}
     $('a.followbutton').click(function (e) {
-        e.preventDefault();
-        $.post('{% url "user_follow" %}',
-            {
-                id: $(this).data('id'),
-                action: $(this).data('action')
-            },
-            function (data) {
-                if (data['status'] === 'ok') {
-                    var previous_action = $('a.followbutton').data('action');
-                    $('a.followbutton').data('action', previous_action === 'follow' ? 'unfollow' : 'follow');
-                    $('a.followbutton').text(previous_action === 'follow' ? 'Unfollow' : 'Follow');
+    e.preventDefault();
+    $.post('{% url "user_follow" %}',
+    {
+    id: $(this).data('id'),
+    action: $(this).data('action')
+    },
+    function (data) {
+    if (data['status'] === 'ok') {
+    var previous_action = $('a.followbutton').data('action');
+    $('a.followbutton').data('action', previous_action === 'follow' ? 'unfollow' : 'follow');
+    $('a.followbutton').text(previous_action === 'follow' ? 'Unfollow' : 'Follow');
 
-                    var previous_followers = parseInt($('span.count .total').text());
-                    $('span.count .total').text(previous_action === 'follow' ? previous_followers + 1 : previous_followers - 1);
+    var previous_followers = parseInt($('span.count .total').text());
+    $('span.count .total').text(previous_action === 'follow' ? previous_followers + 1 : previous_followers - 1);
 
-                    var follower_plural = $('span.count .followers').text()
-                    var new_followers = parseInt($('span.count .total').text());
-                    $('span.count .followers').text(new_followers == 1 ? follower_plural = 'follower' : follower_plural = 'followers');
-                }
-            });
+    if (previous_action == 'follow') {
+    $('a.followbutton').toggleClass('btn-primary btn-outline-primary')
+    } else {
+    $('a.followbutton').toggleClass('btn-outline-primary btn-primary')
+    }
+
+    var follower_plural = $('span.count .followers').text()
+    var new_followers = parseInt($('span.count .total').text());
+    $('span.count .followers').text(new_followers == 1 ? follower_plural = 'follower' : follower_plural = 'followers');
+    }
     });
-{% endblock  %}
+    });
+{% endblock %}

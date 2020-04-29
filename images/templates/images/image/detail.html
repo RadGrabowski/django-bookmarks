@@ -4,71 +4,100 @@
 {% block title %}{{ image.title }}{% endblock %}
 
 {% block content %}
-    <h1>{{ image.title }}</h1>
-    {% load thumbnail %}
-    {% thumbnail image.image '300' as im %}
-        <a href="{{ image.image.url }}">
-            <img src="{{ im.url }}" class="image-detail">
-        </a>
-    {% endthumbnail %}
-    {% with total_likes=image.users_like.count users_like=image.users_like.all %}
-        <div class="image-info">
-            <div>
-            <span class="count">
-                <span class="total">{{ total_likes }}</span>
-                <span class="likes">like{{ total_likes|pluralize }}</span>
-            </span>
-            {% get_hit_count for image as hits %}
-            <p>{{ hits }} view{{ hits|pluralize }}</p>
-                <a href="#" data-id="{{ image.id }}" data-action="{% if request.user in users_like %}un{% endif %}like"
-                   class="like-button">
-                    {% if request.user not in users_like %}
-                        Like
-                    {% else %}
-                        Unlike
-                    {% endif %}
-                </a>
+    <div style="padding-left: 10%; padding-top: 1%">
+        <h1 style="padding-bottom: 15px">{{ image.title }}</h1>
+        <div class="row">
+            <div class="col-3">
+                {% load thumbnail %}
+                {% thumbnail image.image '300' as im %}
+                    <a href="{{ image.image.url }}">
+                        <img src="{{ im.url }}" class="image-detail">
+                    </a>
+                {% endthumbnail %}
             </div>
-            {{ image.description|linebreaks }}
-        </div>
-        <div class="image-likes">
-            {% for user in image.users_like.all %}
-                <div>
-                    {% thumbnail user.profile.photo '50' as profile %}
-                    <img src="{{ profile.url }}">
-                    {% endthumbnail %}
-                    <p>{{ user.first_name }}</p>
-                </div>
-            {% empty %}
-                Nobody likes this image yet.
-            {% endfor %}
-        </div>
-    {% endwith %}
+            <div class="col-6">
+                {% with total_likes=image.users_like.count users_like=image.users_like.all %}
+                    <div class="image-info">
+                        <div style="padding-left: 20px">
+                            <span class="count">
+                                <span class="total">{{ total_likes }}</span>
+                                <span class="likes">like{{ total_likes|pluralize }}</span>
+                                {% get_hit_count for image as hits %}
+                                <span> | {{ hits }} view{{ hits|pluralize }}</span>
+                            </span>
+                            <br>
+                            <br>
+                            <p style="font-style: italic; color: #10c1d1; font-size: 0.8em">Posted
+                                by <a href="{{ image.user.get_absolute_url }}"> {{ image.user.get_full_name }}</a>
+                                on {{ image.created }}</p>
+
+                            <a href="#" data-id="{{ image.id }}"
+                               data-action="{% if request.user in users_like %}un{% endif %}like"
+                                    {% if request.user not in users_like %}
+                               class="like-button btn btn-outline-primary" style="width: 75px">
+                                        Like
+                                    {% else %}
+                                        class="like-button btn btn-primary" style="width: 75px">
+                                        Unlike
+                                    {% endif %}
+                            </a>
+                            <br>
+                            <br>
+                            <h4>Description</h4>
+                            {{ image.description|linebreaks }}
+                        </div>
+                    </div>
+                    </div>
+                    </div>
+                    <hr>
+                    <h2 style="padding-bottom: 10px">Liked by: </h2>
+                    <div class="row">
+                        {% for user in image.users_like.all %}
+                            <div class="col-1">
+                                {% thumbnail user.profile.photo '50' as profile %}
+                                    <a href="{{ user.get_absolute_url }}">
+                                    <img src="{{ profile.url }}" style="border-radius: 50%">
+                                    </a>
+                                {% endthumbnail %}
+                                <p>{{ user.first_name }}</p>
+                            </div>
+                        {% empty %}
+                            Nobody likes this image yet.
+                        {% endfor %}
+                    </div>
+                {% endwith %}
+    </div>
 {% endblock %}
 
 {% block domready %}
     $('a.like-button').click(function (e) {
     e.preventDefault();
     $.post('{% url "images:like" %}',
-        {
-            id: $(this).data('id'),
-            action: $(this).data('action')
-        },
-        function (data) {
-            if (data['status'] == 'ok') {
-                var previous_action = $('a.like-button').data('action');
+    {
+    id: $(this).data('id'),
+    action: $(this).data('action')
+    },
+    function (data) {
+    if (data['status'] == 'ok') {
+    var previous_action = $('a.like-button').data('action');
 
-                $('a.like-button').data('action', previous_action == 'like' ? 'unlike' : 'like');
+    $('a.like-button').data('action', previous_action == 'like' ? 'unlike' : 'like');
 
-                $('a.like-button').text(previous_action == 'like' ? 'Unlike' : 'Like');
+    $('a.like-button').text(previous_action == 'like' ? 'Unlike' : 'Like');
 
-                var previous_likes = parseInt($('span.count .total').text());
-                var like_plural = $('span.count .likes').text()
-                $('span.count .total').text(previous_action == 'like' ? previous_likes + 1 : previous_likes - 1);
-                var new_likes = parseInt($('span.count .total').text());
-                $('span.count .likes').text(new_likes == 1 ? like_plural = 'like' : like_plural = 'likes');
-            }
-        }
+    if (previous_action == 'like') {
+    $('a.like-button').toggleClass('btn-primary btn-outline-primary')
+    } else {
+    $('a.like-button').toggleClass('btn-outline-primary btn-primary')
+    }
+
+    var previous_likes = parseInt($('span.count .total').text());
+    var like_plural = $('span.count .likes').text()
+    $('span.count .total').text(previous_action == 'like' ? previous_likes + 1 : previous_likes - 1);
+    var new_likes = parseInt($('span.count .total').text());
+    $('span.count .likes').text(new_likes == 1 ? like_plural = 'like' : like_plural = 'likes');
+    }
+    }
     );
-});
+    });
 {% endblock %}

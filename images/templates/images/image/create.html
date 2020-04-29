@@ -1,11 +1,37 @@
 {% extends "base.html" %}
 {% block title %}Bookmark an image{% endblock %}
 {% block content %}
-    <h1>Bookmark an image</h1>
-    <img src="{{ request.GET.url }}" class="image-preview" alt="No image found">
-    <form action="." method="post">
-        {{ form.as_p }}
-        {% csrf_token %}
-        <input type="submit" value="Bookmark it!">
-    </form>
+    <div style="padding-left: 10%; padding-top: 1%; padding-right: 5%">
+
+        <h1>Bookmark an image</h1>
+        <br>
+        <div class="row">
+            <div class="col-3">
+                <img src="{{ request.GET.url }}" class="image-preview" alt="No image found">
+                <br>
+                <br>
+            </div>
+            <div class="col-3" style="padding-left: 50px; padding-top: 20px">
+                <form action="." method="post">
+                    {% for field in form.visible_fields %}
+                        <div class="form-group">
+                            {{ field.label_tag }}
+                            <br>
+                            {{ field }}
+                            <small style="font-style: italic; color: #ff300f; font-size: 0.8em;">{{ field.errors }}</small>
+                            {% if field.help_text %}
+                                <small style="font-style: italic; color: #10c1d1; font-size: 0.8em;">{{ field.help_text|safe }}</small>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    {% for hidden_field in form.hidden_fields %}
+                        {{ hidden_field.errors }}
+                        {{ hidden_field }}
+                    {% endfor %}
+                    {% csrf_token %}
+                    <input class="btn btn-outline-success" type="submit" value="Bookmark it!">
+                </form>
+            </div>
+        </div>
+    </div>
 {% endblock %}

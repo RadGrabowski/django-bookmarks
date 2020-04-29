@@ -1,23 +1,52 @@
 {% extends "base.html" %}
 {% block title %}Dashboard{% endblock %}
 {% block content %}
-    <h1>Dashboard</h1>
-    {% with total_images_created=request.user.images_created.count %}
-        <p>Welcome to your dashboard. You have bookmarked {{ total_images_created }}
-        image{{ total_images_created|pluralize }}.</p>
-    {% endwith %}
+    <div class="container-fluid">
+        <div class="row">
+            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+                <div style="padding-left: 10%">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h1">Dashboard</h1>
+                        <div class="btn-toolbar mb-2 mb-md-0">
+                            <div class="btn-group mr-2">
+                                <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
+                                This week
+                            </button>
+                        </div>
+                    </div>
+                    {% with total_images_created=request.user.images_created.count %}
+                        <p>Welcome to your dashboard. You have bookmarked {{ total_images_created }}
+                            image{{ total_images_created|pluralize }}.</p>
+                    {% endwith %}
 
-    <p>Drag the following button to your bookmarks toolbar to bookmark images from other websites →
-    <a href="javascript:{% include 'bookmarklet_launcher.js' %}" class="btn-link">Bookmark it</a></p>
-
-    <p>You can also <a href="{% url "edit" %}">edit</a> your profile or
-        <a href="{% url "password_change" %}">change</a> your password.</p>
-    <h2>What's happening</h2>
-    <div id="action-list">
-    {% for action in actions %}
-        {% include "actions/action/detail.html" %}
-        {% empty %}
-        <p>There are no recent activities yet. Maybe you should follow someone!</p>
-    {% endfor %}
+                    <p>Drag this button to your bookmarks toolbar to bookmark images from other websites →
+                        <a href="javascript:{% include 'bookmarklet_launcher.js' %}" class="btn-link"><button type="button" class="btn btn-sm btn-outline-secondary">
+                                Bookmark it
+                            </button></a>
+                    </p>
+                    <p>You can also <a href="{% url "edit" %}">edit</a> your profile or
+                        <a href="{% url "password_change" %}">change</a> your password.</p>
+                </div>
+            </main>
+            <nav class="col-md-2 d-none d-md-block bg-light sidebar" style="overflow-y:scroll; height: 89vh">
+                <div class="sidebar-sticky">
+                    <h4 style="padding-top: 20px; text-decoration-line: underline">What's happening</h4>
+                    <ul class="nav flex-column">
+                        {% for action in actions %}
+                            <div class="border rounded flex-md-row mb-4 shadow-sm h-md-250" style="background: rgba(12,250,243,0.15); border: rgba(12,216,209,0.4); padding: 10px">
+                                <li class="nav-item">
+                                    {% include "actions/action/detail.html" %}
+                                </li>
+                            </div>
+                        {% empty %}
+                            <p>There are no recent activities yet. Maybe you should follow someone!</p>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </nav>
+        </div>
     </div>
 {% endblock %}

@@ -1,11 +1,10 @@
 {% load thumbnail %}
 {% with user=action.user profile=action.user.profile %}
-    <div class="action">
         <div class="images">
             {% if profile.photo %}
                 {% thumbnail profile.photo "50x50" crop="100%" as im %}
-                    <a href="{{ user.get_absolute_url }}">
-                        <img src="{{ im.url }}" alt="{{ user.get_full_name }}" class="item-img">
+                    <a href="{{ user.get_absolute_url }}" style="text-decoration-line: none">
+                        <img src="{{ im.url }}" alt="{{ user.get_full_name }}" class="item-img" style="border-radius: 20%">
                     </a>
                 {% endthumbnail %}
             {% endif %}
@@ -13,15 +12,15 @@
                 {% with target=action.target %}
                     {% if target.image %}
                         {% thumbnail target.image "50x50" crop="100%" as im %}
-                            <a href="{{ target.get_absolute_url }}">
-                                <img src="{{ im.url }}" class="item-img">
+                            <a href="{{ target.get_absolute_url }}" style="text-decoration-line: none">
+                                <img src="{{ im.url }}" class="item-img" style="border-radius: 20%">
                             </a>
                         {% endthumbnail %}
                     {% endif %}
                     {% if target.profile.photo %}
                         {% thumbnail target.profile.photo "50x50" crop="100%" as im %}
-                            <a href="{{ target.get_absolute_url }}">
-                                <img src="{{ im.url }}" alt="{{ user.get_full_name }}" class="item-img">
+                            <a href="{{ target.get_absolute_url }}" style="text-decoration-line: none">
+                                <img src="{{ im.url }}" alt="{{ user.get_full_name }}" class="item-img" style="border-radius: 20%">
                             </a>
                         {% endthumbnail %}
                     {% endif %}
@@ -29,20 +28,17 @@
             {% endif %}
         </div>
         <div class="info">
-            <p>
-                <span class="date">{{ action.created|timesince }} ago</span>
+            <span>
+                <span class="date" style="font-style: italic; color: #10c1d1; font-size: 0.8em">{{ action.created|timesince }} ago</span>
                 <br/>
-                <a href="{{ user.get_absolute_url }}">
-                    {{ user.first_name }}
-                </a>
+                <a href="{{ user.get_absolute_url }}" style="color: black">{{ user.first_name }}</a>
                 {{ action.verb }}
                 {% if action.target %}
                     {% with target=action.target %}
-                        <a href="{{ target.get_absolute_url }}">
-                            {% if target.first_name %}{{ target.first_name }}{% else %}{{ target }}{% endif %}</a>
+                        <a href="{{ target.get_absolute_url }}" style="color: black">
+                            {% if target.first_name %}"{{ target.first_name }}"{% else %}"{{ target }}"{% endif %}</a>
                     {% endwith %}
                 {% endif %}
-            </p>
+            </span>
         </div>
-    </div>
 {% endwith %}

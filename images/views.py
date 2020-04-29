@@ -24,6 +24,8 @@ def image_create(request):
             create_action(request.user, 'bookmarked image', new_item)
             messages.success(request, 'Image added successfully')
             return redirect(new_item.get_absolute_url())
+        else:
+            return HttpResponse(form)
     else:
         form = ImageCreateForm(data=request.GET)
 
@@ -71,7 +73,7 @@ def image_like(request):
 @login_required
 def image_list(request):
     images = Image.objects.all()
-    paginator = Paginator(images, 8)
+    paginator = Paginator(images, 9)
     page = request.GET.get('page')
     try:
         images = paginator.page(page)
