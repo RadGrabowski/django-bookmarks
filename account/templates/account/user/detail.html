@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load thumbnail %}
+{% load image_tags %}
 {% block title %}{{ user.get_full_name }}{% endblock %}
 {% block content %}
     <div style="padding-left: 10%; padding-top: 1%; padding-right: 5%">
@@ -12,30 +13,49 @@
                 {% with total_followers=user.followers.count %}
                     <span class="count">
                 <span class="total">{{ total_followers }}</span>
-                <span class="followers">follower{{ total_followers|pluralize }}</span>
+                <span class="followers">follower{{ total_followers|pluralize }} | </span>
+                    <span>{% total_likes user %} total likes | </span>
+                    <span>{% total_views user %} total views</span>
                 </span>
                     <br>
                     <br>
-                    <a href="#" data-id="{{ user.id }}"
-                       data-action="{% if request.user in user.followers.all %}un{% endif %}follow"
-                            {% if request.user not in user.followers.all %}
-                       class="followbutton btn btn-outline-primary" style="width: 100px">
-                                Follow
-                            {% else %}
-                                class="followbutton btn btn-primary" style="width: 100px">
-                                Unfollow
-                            {% endif %}
-                    </a>
+                    {% if user != request.user %}
+                        <a href="#" data-id="{{ user.id }}"
+                           data-action="{% if request.user in user.followers.all %}un{% endif %}follow"
+                                {% if request.user not in user.followers.all %}
+                           class="followbutton btn btn-outline-primary" style="width: 100px">
+                                    Follow
+                                {% else %}
+                                    class="followbutton btn btn-primary" style="width: 100px">
+                                    Unfollow
+                                {% endif %}
+                        </a>
+                    {% endif %}
                     </div>
 
                     <br> <br> <br> <br> <br> <br> <br> <br><br>
+                    <h2>{{ user.first_name }}'s followers:</h2>
+                    <div class="row" style="padding-top: 20px">
+                        {% for follower in user.followers.all %}
+                            <div class="col-1">
+                                {% thumbnail follower.profile.photo '50' as profile %}
+                                    <a href="{{ follower.get_absolute_url }}">
+                                        <img src="{{ profile.url }}" style="border-radius: 50%">
+                                    </a>
+                                {% endthumbnail %}
+                                <p>{{ follower.first_name }}</p>
+                            </div>
+                        {% empty %}
+                            Nobody follows this user yet.
+                        {% endfor %}
+                    </div>
                     <hr>
-                    <h2>Images bookmarked by {{ user.first_name }}:</h2>
-                    <br>
-                    <br>
-                    <br>
-                    <div id="image-list" class="image-container">
-                        {% include "images/image/list_ajax.html" with images=user.images_created.all %}
+                    <div>
+                        <h2>Images bookmarked by {{ user.first_name }}:</h2>
+                        <br>
+                        <div id="image-list" class="image-container">
+                            {% include "images/image/list_ajax.html" with images=user.images_created.all %}
+                        </div>
                     </div>
                 {% endwith %}
         </div>

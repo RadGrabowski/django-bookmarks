@@ -85,7 +85,7 @@ def edit(request):
 
 @login_required
 def user_list(request):
-    users = User.objects.filter(is_active=True, is_superuser=False)
+    users = User.objects.filter(is_active=True, is_superuser=False).exclude(username=request.user)
     return render(request, 'account/user/list.html', {'section': 'people', 'users': users})
 
 

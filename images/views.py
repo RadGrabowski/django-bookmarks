@@ -28,7 +28,6 @@ def image_create(request):
             return HttpResponse(form)
     else:
         form = ImageCreateForm(data=request.GET)
-
     return render(request, 'images/image/create.html', {'section': 'images', 'form': form})
 
 
@@ -72,7 +71,7 @@ def image_like(request):
 
 @login_required
 def image_list(request):
-    images = Image.objects.all()
+    images = Image.objects.all().order_by('-created')
     paginator = Paginator(images, 9)
     page = request.GET.get('page')
     try:
