@@ -1,7 +1,8 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
-from django.views.generic.detail import DetailView
+from django.views.generic import TemplateView, ListView
 from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse, HttpResponse
@@ -12,23 +13,24 @@ from actions.utils import create_action
 from hitcount.views import HitCountDetailView
 
 
-@login_required
-def image_create(request):
-    if request.method == 'POST':
-        form = ImageCreateForm(data=request.POST)
+class ImageCreateView(LoginRequiredMixin, TemplateView):
+    template_name = 'images/image/create.html'
+
+    def post(self, **kwargs):
+        form = ImageCreateForm(data=self.request.POST)
         if form.is_valid():
-            cd = form.cleaned_data
             new_item = form.save(commit=False)
-            new_item.user = request.user
+            new_item.user = self.request.user
             new_item.save()
-            create_action(request.user, 'bookmarked image', new_item)
-            messages.success(request, 'Image added successfully')
+            create_action(self.request.user, 'bookmarked image', new_item)
+            messages.success(self.request, 'Image added successfully')
             return redirect(new_item.get_absolute_url())
         else:
             return HttpResponse(form)
-    else:
+
+    def get(self, request, *args, **kwargs):
         form = ImageCreateForm(data=request.GET)
-    return render(request, 'images/image/create.html', {'section': 'images', 'form': form})
+        return self.render_to_response({'section': 'images', 'form': form})
 
 
 class ImageDetailView(HitCountDetailView):
@@ -42,11 +44,6 @@ class ImageDetailView(HitCountDetailView):
         context = super().get_context_data(**kwargs)
         context['section'] = 'images'
         return context
-
-
-# def image_detail(request, id_, slug):
-#     image = get_object_or_404(Image, id=id_, slug=slug)
-#     return render(request, 'images/image/detail.html', {'section': 'images', 'image': image})
 
 
 @ajax_required
@@ -69,28 +66,32 @@ def image_like(request):
     return JsonResponse({'status': 'error'})
 
 
-@login_required
-def image_list(request):
-    images = Image.objects.all().order_by('-created')
-    paginator = Paginator(images, 9)
-    page = request.GET.get('page')
-    try:
-        images = paginator.page(page)
-    except PageNotAnInteger:
-        images = paginator.page(1)
-    except EmptyPage:
+class ImageListView(LoginRequiredMixin, TemplateView):
+    def get(self, request, *args, **kwargs):
+        images = Image.objects.all().order_by('-created')
+        paginator = Paginator(images, 9)
+        page = request.GET.get('page')
+        try:
+            images = paginator.page(page)
+        except PageNotAnInteger:
+            images = paginator.page(1)
+        except EmptyPage:
+            if request.is_ajax():
+                return HttpResponse('')
+            images = paginator.page(paginator.num_pages)
         if request.is_ajax():
-            return HttpResponse('')
-        images = paginator.page(paginator.num_pages)
-    if request.is_ajax():
-        return render(request, 'images/image/list_ajax.html', {'section': 'images', 'images': images})
-    return render(request, 'images/image/list.html', {'section': 'images', 'images': images})
+            return render(request, 'images/image/list_ajax.html', {'section': 'images', 'images': images})
+        return render(request, 'images/image/list.html', {'section': 'images', 'images': images})
 
 
-@login_required
-def image_ranking(request):
-    most_viewed = Image.objects.order_by('-hit_count_generic__hits')[:10]
-    for image in most_viewed:
-        print(image.hit_count_generic)
+class ImageRankingView(LoginRequiredMixin, ListView):
+    template_name = 'images/image/ranking.html'
+    context_object_name = 'most_viewed'
 
-    return render(request, 'images/image/ranking.html', {'section': 'images', 'most_viewed': most_viewed})
+    def get_queryset(self):
+        return Image.objects.order_by('-hit_count_generic__hits')[:10]
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['section'] = 'images'
+        return context

@@ -25,7 +25,6 @@
                         </div>
                     {% endfor %}
                     {% for hidden_field in form.hidden_fields %}
-                        {{ hidden_field.errors }}
                         {{ hidden_field }}
                     {% endfor %}
                     {% csrf_token %}
